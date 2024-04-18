@@ -4,49 +4,50 @@
 #include <GLUT/glut.h>
 #include <math.h>
 
+#include "Pacman.h"
+#include "Ghost.h"
+
 #define PI 3.1415926535897932384626433832795
 
-float pacman_x = 0.0;
-float pacman_y = 0.0;
-float pacman_angle = 0.0;
+Pacman pacman;
+Ghost ghost;
+char currentDirection = ' ';
 
 void display() {
     glClear(GL_COLOR_BUFFER_BIT);
     glLoadIdentity();
 
-    // Draw Pacman
-    glBegin(GL_TRIANGLE_FAN);
-    glColor3f(1.0, 1.0, 0.0); // Yellow
-    glVertex2f(pacman_x, pacman_y); // center of circle
-    for (int i = pacman_angle; i <= pacman_angle + 300; i++){
-        float degInRad = i*PI/180;
-        glVertex2f(pacman_x + cos(degInRad)*0.1, pacman_y + sin(degInRad)*0.1);
-    }
-    glEnd();
+    pacman.draw();
+    ghost.draw();
 
     glutSwapBuffers();
 }
 
-void keyboard(unsigned char key, int x, int y) {
-    switch (key) {
+void timer(int) {
+    switch (currentDirection) {
         case 'w':
-            pacman_y += 0.1;
-            pacman_angle = 90;
+            pacman.moveUp();
             break;
         case 's':
-            pacman_y -= 0.1;
-            pacman_angle = 270;
+            pacman.moveDown();
             break;
         case 'a':
-            pacman_x -= 0.1;
-            pacman_angle = 180;
+            pacman.moveLeft();
             break;
         case 'd':
-            pacman_x += 0.1;
-            pacman_angle = 0;
+            pacman.moveRight();
             break;
     }
+
+    // Redraw the scene
     glutPostRedisplay();
+
+    // Set the timer to call this function again after 20 milliseconds
+    glutTimerFunc(20, timer, 0);
+}
+
+void keyboard(unsigned char key, int x, int y) {
+    currentDirection = key;
 }
 
 void init() {
@@ -58,12 +59,14 @@ int main(int argc, char** argv) {
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
 
     glutInitWindowPosition(200, 100);
-    glutInitWindowSize(500, 500);
+    glutInitWindowSize(1000, 1000);
 
     glutCreateWindow("Pacman Game");
     glutDisplayFunc(display);
     glutKeyboardFunc(keyboard);
     init();
+
+    glutTimerFunc(0, timer, 0);
 
     glutMainLoop();
 }

@@ -6,9 +6,11 @@
           "type": "shell",
           "command": "g++",
           "args": [
-              "${file}",
+              "${workspaceFolder}/main.cpp",
+              "${workspaceFolder}/Pacman.cpp",
+              "${workspaceFolder}/Ghost.cpp",
               "-o",
-              "${fileDirname}/main",
+              "${workspaceFolder}/main",
               "-framework",
               "GLUT",
               "-framework",
@@ -32,3 +34,4 @@
 }
 
 // g++ main.cpp -o main -framework GLUT -framework OpenGL
+// g++ main.cpp Pacman.cpp -o main -framework GLUT -framework OpenGL
