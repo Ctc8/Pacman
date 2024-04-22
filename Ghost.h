@@ -1,8 +1,12 @@
 #ifndef GHOST_H
 #define GHOST_H
+#include "Pacman.h"
+
+enum Direction { UP, DOWN, LEFT, RIGHT };
 
 class Ghost {
 public:
+    Direction direction;
     float x;
     float y;
     float angle;
@@ -14,6 +18,10 @@ public:
     void moveDown();
     void moveLeft();
     void moveRight();
+
+    void move();
+    void changeDirection();
+
 };
 
 #endif

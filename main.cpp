@@ -7,10 +7,9 @@
 #include "Pacman.h"
 #include "Ghost.h"
 
-#define PI 3.1415926535897932384626433832795
-
 Pacman pacman;
 Ghost ghost;
+
 char currentDirection = ' ';
 
 void display() {
@@ -39,19 +38,25 @@ void timer(int) {
             break;
     }
 
-    // Redraw the scene
+    static int changeDirectionCounter = 0;
+    if (changeDirectionCounter++ % 80 == 0) { 
+        ghost.changeDirection();
+    }
+    ghost.move();
+
     glutPostRedisplay();
 
-    // Set the timer to call this function again after 20 milliseconds
     glutTimerFunc(20, timer, 0);
 }
+
+
 
 void keyboard(unsigned char key, int x, int y) {
     currentDirection = key;
 }
 
 void init() {
-    glClearColor(0.0, 0.0, 0.0, 1.0);
+    glClearColor(0.5, 0.5, 0.5, 1.0);
 }
 
 int main(int argc, char** argv) {
@@ -59,7 +64,7 @@ int main(int argc, char** argv) {
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
 
     glutInitWindowPosition(200, 100);
-    glutInitWindowSize(1000, 1000);
+    glutInitWindowSize(700, 700);
 
     glutCreateWindow("Pacman Game");
     glutDisplayFunc(display);

@@ -1,6 +1,10 @@
 #ifndef PACMAN_H
 #define PACMAN_H
 
+#include <OpenGL/gl.h>
+#include <OpenGL/glu.h>
+#include <GLUT/glut.h>
+
 #define PI 3.1415926535897932384626433832795
 #include <math.h>
 
@@ -9,6 +13,10 @@ public:
     float x;
     float y;
     float angle;
+    float radius;
+    int** maze;
+
+    Pacman(int** maze) : maze(maze) {}
 
     Pacman() : x(0.0), y(0.0), angle(0.0) {}
 
