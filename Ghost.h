@@ -1,6 +1,7 @@
 #ifndef GHOST_H
 #define GHOST_H
 #include "Pacman.h"
+#include <utility> // for std::pair
 
 enum Direction { UP, DOWN, LEFT, RIGHT };
 
@@ -10,8 +11,13 @@ public:
     float x;
     float y;
     float angle;
+    float color[3]; // RGB color
 
-    Ghost() : x(0.0), y(0.0), angle(0.0) {}
+    Ghost(float r, float g, float b) : x(0.0), y(0.0), angle(0.0) {
+        color[0] = r;
+        color[1] = g;
+        color[2] = b;
+    }
 
     void draw();
     void moveUp();
@@ -21,6 +27,9 @@ public:
 
     void move();
     void changeDirection();
+
+    float getX();
+    float getY();
 
 };
 

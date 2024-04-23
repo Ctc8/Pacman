@@ -18,13 +18,16 @@ public:
 
     Pacman(int** maze) : maze(maze) {}
 
-    Pacman() : x(0.0), y(0.0), angle(0.0) {}
+    Pacman() : x(0.0), y(0.5), angle(0.0) {}
 
     void draw();
     void moveUp();
     void moveDown();
     void moveLeft();
     void moveRight();
+
+    float getX();
+    float getY();
 };
 
 #endif 

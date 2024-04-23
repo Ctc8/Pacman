@@ -3,6 +3,7 @@
 #include <OpenGL/gl.h>
 #include <OpenGL/glu.h>
 #include <GLUT/glut.h>
+#include <utility>
 
 void Pacman::draw() {
     float radius = 0.03; 
@@ -17,24 +18,32 @@ void Pacman::draw() {
     glEnd();
 }
 
-
+void getPosition();
 
 void Pacman::moveUp() {
-    y = y + 0.01;
+    y = y + 0.011;
     angle = 90; 
 }
 
 void Pacman::moveDown() {
-    y = y - 0.01;
+    y = y - 0.011;
     angle = 270; 
 }
 
 void Pacman::moveLeft() {
-    x = x - 0.01;
+    x = x - 0.011;
     angle = 180; 
 }
 
 void Pacman::moveRight() {
-    x = x + 0.01;
+    x = x + 0.011;
     angle = 0; 
+}
+
+float Pacman::getX() {
+    return x;
+}
+
+float Pacman::getY() {
+    return y;
 }

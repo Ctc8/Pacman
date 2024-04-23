@@ -8,21 +8,46 @@
 #include "Ghost.h"
 
 Pacman pacman;
-Ghost ghost;
+Ghost redGhost(1.0, 0.0, 0.0); // Red ghost
+Ghost greenGhost(0.0, 1.0, 0.0); // Green ghost
+Ghost blueGhost(0.0, 0.0, 1.0); // Blue ghost
 
 char currentDirection = ' ';
+
+bool gameOver = false;
 
 void display() {
     glClear(GL_COLOR_BUFFER_BIT);
     glLoadIdentity();
 
-    pacman.draw();
-    ghost.draw();
+    if (gameOver) {
+        const char *gameOverText = "Game Over";
+        glColor3f(1.0, 0.0, 0.0); // Set color to red
+        glRasterPos2f(-0.1, 0); // Adjust position as needed
+        for (const char *c = gameOverText; *c != '\0'; c++) {
+            glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, *c);
+        }
+    } 
+    else {
+        pacman.draw();
+        redGhost.draw();
+        greenGhost.draw();
+        blueGhost.draw();
+    }
 
     glutSwapBuffers();
 }
 
+bool checkCollision(Pacman pacman, Ghost ghost) {
+    float threshold = 0.03; 
+    return abs(pacman.getX() - ghost.getX()) <= threshold && abs(pacman.getY() - ghost.getY()) <= threshold;
+}
+
 void timer(int) {
+    if (gameOver) {
+        return;
+    }
+
     switch (currentDirection) {
         case 'w':
             pacman.moveUp();
@@ -39,10 +64,18 @@ void timer(int) {
     }
 
     static int changeDirectionCounter = 0;
-    if (changeDirectionCounter++ % 80 == 0) { 
-        ghost.changeDirection();
+    if (changeDirectionCounter++ % 65 == 0) { 
+        redGhost.changeDirection();
+        greenGhost.changeDirection();
+        blueGhost.changeDirection();
     }
-    ghost.move();
+    redGhost.move();
+    greenGhost.move();
+    blueGhost.move();
+
+    if (checkCollision(pacman, redGhost) || checkCollision(pacman, greenGhost) || checkCollision(pacman, blueGhost)) {
+        gameOver = true;
+    }
 
     glutPostRedisplay();
 

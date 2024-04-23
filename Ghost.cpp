@@ -9,7 +9,8 @@
 #define PI 3.1415926535897932384626433832795
 
 void Ghost::draw() {
-    float size = 0.03; // Size of the square
+    float size = 0.04; // Size of the square
+    glColor3f(color[0], color[1], color[2]);
 
     glBegin(GL_QUADS);
     glColor3f(1.0, 0.0, 0.0); // Red color for the ghost
@@ -61,4 +62,12 @@ void Ghost::changeDirection() {
             direction = Direction::RIGHT;
             break;
     }
+}
+
+float Ghost::getX() {
+    return x;
+}
+
+float Ghost::getY() {
+    return y;
 }
