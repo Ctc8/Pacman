@@ -3,20 +3,28 @@
 #include <OpenGL/glu.h>
 #include <GLUT/glut.h>
 #include <math.h>
+#include <vector>
+
 
 #include "Pacman.h"
 #include "Ghost.h"
+#include "Pellet.h" // Include the Pellet class
+// #include "Score.h" // Include the Score class
 
 Pacman pacman;
 Ghost redGhost(1.0, 0.0, 0.0); // Red ghost
 Ghost greenGhost(0.0, 1.0, 0.0); // Green ghost
 Ghost blueGhost(0.0, 0.0, 1.0); // Blue ghost
 
+std::vector<Pellet> pellets; // Create a vector to hold the pellets
+// Score score; // Create a Score object
+
 char currentDirection = ' ';
 
 bool gameOver = false;
 
 void display() {
+    glClearColor(135/255.0, 255/255.0, 153/255.0, 1.0); // Set clear color to (135, 255, 153)
     glClear(GL_COLOR_BUFFER_BIT);
     glLoadIdentity();
 
@@ -33,6 +41,13 @@ void display() {
         redGhost.draw();
         greenGhost.draw();
         blueGhost.draw();
+
+        for (const Pellet &pellet : pellets) {
+            pellet.draw();
+        }
+
+        // Display the score
+        // score.display();
     }
 
     glutSwapBuffers();
@@ -43,10 +58,21 @@ bool checkCollision(Pacman pacman, Ghost ghost) {
     return abs(pacman.getX() - ghost.getX()) <= threshold && abs(pacman.getY() - ghost.getY()) <= threshold;
 }
 
+bool isColliding(Pacman pacman, Pellet pellet) {
+    float threshold = 0.03; // Adjust as needed
+    return abs(pacman.getX() - pellet.getX()) <= threshold && abs(pacman.getY() - pellet.getY()) <= threshold;
+}
+
 void timer(int) {
     if (gameOver) {
         return;
     }
+
+    for (Pellet &pellet : pellets) {
+    if (isColliding(pacman, pellet)) {
+        pellet.eat();
+    }
+}
 
     switch (currentDirection) {
         case 'w':
@@ -82,14 +108,21 @@ void timer(int) {
     glutTimerFunc(20, timer, 0);
 }
 
-
-
 void keyboard(unsigned char key, int x, int y) {
     currentDirection = key;
 }
 
 void init() {
     glClearColor(0.5, 0.5, 0.5, 1.0);
+
+    srand(static_cast<unsigned>(time(0)));
+
+    for (int i = 0; i < 20; i++) {
+        float x = static_cast<float>(rand()) / static_cast<float>(RAND_MAX) * 2.0f - 1.0f;
+        float y = static_cast<float>(rand()) / static_cast<float>(RAND_MAX) * 2.0f - 1.0f;
+
+        pellets.push_back(Pellet(x, y));
+    }
 }
 
 int main(int argc, char** argv) {
@@ -97,7 +130,7 @@ int main(int argc, char** argv) {
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
 
     glutInitWindowPosition(200, 100);
-    glutInitWindowSize(700, 700);
+    glutInitWindowSize(800, 800);
 
     glutCreateWindow("Pacman Game");
     glutDisplayFunc(display);
