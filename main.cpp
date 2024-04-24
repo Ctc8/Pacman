@@ -4,12 +4,13 @@
 #include <GLUT/glut.h>
 #include <math.h>
 #include <vector>
+#include <sstream>
 
 
 #include "Pacman.h"
 #include "Ghost.h"
-#include "Pellet.h" // Include the Pellet class
-// #include "Score.h" // Include the Score class
+#include "Pellet.h" 
+#include "Score.h" 
 
 Pacman pacman;
 Ghost redGhost(1.0, 0.0, 0.0); // Red ghost
@@ -17,7 +18,7 @@ Ghost greenGhost(0.0, 1.0, 0.0); // Green ghost
 Ghost blueGhost(0.0, 0.0, 1.0); // Blue ghost
 
 std::vector<Pellet> pellets; // Create a vector to hold the pellets
-// Score score; // Create a Score object
+Score score; 
 
 char currentDirection = ' ';
 
@@ -35,6 +36,7 @@ void display() {
         for (const char *c = gameOverText; *c != '\0'; c++) {
             glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, *c);
         }
+        
     } 
     else {
         pacman.draw();
@@ -45,9 +47,15 @@ void display() {
         for (const Pellet &pellet : pellets) {
             pellet.draw();
         }
-
-        // Display the score
-        // score.display();
+    }
+    std::stringstream ss;
+    ss << "Score: " << score.getScore();
+    std::string scoreString = ss.str();
+    const char *scoreText = scoreString.c_str();
+    glColor3f(1.0, 0.0, 0.0); // Set color to red
+    glRasterPos2f(-0.9, 0.9); // Adjust position as needed
+    for (const char *c = scoreText; *c != '\0'; c++) {
+        glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, *c);
     }
 
     glutSwapBuffers();
@@ -71,7 +79,10 @@ void timer(int) {
     for (Pellet &pellet : pellets) {
     if (isColliding(pacman, pellet)) {
         pellet.eat();
+        score.increase(1);
     }
+
+
 }
 
     switch (currentDirection) {
