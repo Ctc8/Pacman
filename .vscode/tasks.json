@@ -9,6 +9,7 @@
         "${workspaceFolder}/main.cpp",
         "${workspaceFolder}/Pacman.cpp",
         "${workspaceFolder}/Ghost.cpp",
+        "${workspaceFolder}/Pellet.cpp",
         "-framework",
         "OpenGL",
         "-framework",

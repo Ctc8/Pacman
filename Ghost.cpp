@@ -4,49 +4,48 @@
 #include <OpenGL/glu.h>
 #include <GLUT/glut.h>
 #include <math.h>
-#include <stdlib.h> // For rand()
+#include <stdlib.h> 
 
 #define PI 3.1415926535897932384626433832795
 
 void Ghost::draw() {
-    float size = 0.04; // Size of the square
+    float size = 0.04; 
     glColor3f(color[0], color[1], color[2]);
 
     glBegin(GL_QUADS);
-    glColor3f(1.0, 0.0, 0.0); // Red color for the ghost
-    glVertex2f(x - size, y - size); // Bottom left corner
-    glVertex2f(x + size, y - size); // Bottom right corner
-    glVertex2f(x + size, y + size); // Top right corner
-    glVertex2f(x - size, y + size); // Top left corner
+    glVertex2f(x - size, y - size);
+    glVertex2f(x + size, y - size);
+    glVertex2f(x + size, y + size); 
+    glVertex2f(x - size, y + size); 
     glEnd();
 }
 
 void Ghost::move() {
-    float speed = 0.01; // Adjust speed as needed
-    float size = 0.03; // Size of the square
+    float speed = 0.01; 
+    float size = 0.03; 
 
     switch (direction) {
         case UP:
-            if (y + size + speed <= 1) // Check if the ghost is not at the top edge
+            if (y + size + speed <= 1) 
                 y += speed;
             break;
         case DOWN:
-            if (y - size - speed >= -1) // Check if the ghost is not at the bottom edge
+            if (y - size - speed >= -1)  
                 y -= speed;
             break;
         case LEFT:
-            if (x - size - speed >= -1) // Check if the ghost is not at the left edge
+            if (x - size - speed >= -1) 
                 x -= speed;
             break;
         case RIGHT:
-            if (x + size + speed <= 1) // Check if the ghost is not at the right edge
+            if (x + size + speed <= 1) 
                 x += speed;
             break;
     }
 }
 
 void Ghost::changeDirection() {
-    int random = rand() % 4; // Generate a random number between 0 and 3
+    int random = rand() % 4; 
 
     switch (random) {
         case 0:

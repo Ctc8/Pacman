@@ -6,11 +6,11 @@
 #include <utility>
 
 void Pacman::draw() {
-    float radius = 0.04; // Adjust the radius to make Pacman bigger or smaller
+    float radius = 0.04; 
 
     glBegin(GL_TRIANGLE_FAN);
-    glColor3f(1.0, 1.0, 0.0); // Yellow
-    glVertex2f(x, y); // center of circle
+    glColor3f(1.0, 1.0, 0.0); 
+    glVertex2f(x, y); 
     for (int i = 0; i <= 360; i++){
         float degInRad = i*PI/180;
         glVertex2f(x + cos(degInRad)*radius, y + sin(degInRad)*radius);
