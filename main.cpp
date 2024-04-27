@@ -8,16 +8,15 @@
 #include <iostream>
 
 
-#include "Pacman.h"
-#include "Ghost.h"
 #include "Pellet.h" 
 #include "Score.h" 
+#include "GameEntity.h"
 
-Pacman pacman;
-Ghost redGhost(1.0, 0.0, 0.0); 
-Ghost greenGhost(0.0, 1.0, 0.0); 
-Ghost blueGhost(0.0, 0.0, 1.0); 
-Ghost orangeGhost(1.0, 0.5, 0.0); 
+GameEntity pacman(0.0, 0.0, 1.0, 1.0, 0.0);
+GameEntity redGhost(-0.8, 0.0, 1.0, 0.0, 0.0); 
+GameEntity greenGhost(-0.6, 0.0, 0.0, 1.0, 0.0); 
+GameEntity blueGhost(-0.4, 0.0, 0.0, 0.0, 1.0); 
+GameEntity orangeGhost(-0.2, 0.0, 1.0, 0.5, 0.0); 
 
 std::vector<Pellet> pellets; 
 Score score; 
@@ -80,14 +79,14 @@ void resetGameLose() {
     std::cout << "lost the game. Resetting game..." << std::endl;
     currentLevel = 1;
 
-    pacman = Pacman(); 
-    redGhost = Ghost(1.0, 0.0, 0.0); 
-    greenGhost = Ghost(0.0, 1.0, 0.0); 
-    blueGhost = Ghost(0.0, 0.0, 1.0); 
-    orangeGhost = Ghost(1.0, 0.5, 0.0); 
+GameEntity pacman(0.0, 0.0, 1.0, 1.0, 0.0);
+GameEntity redGhost(-0.8, 0.0, 1.0, 0.0, 0.0); 
+GameEntity greenGhost(-0.6, 0.0, 0.0, 1.0, 0.0); 
+GameEntity blueGhost(-0.4, 0.0, 0.0, 0.0, 1.0); 
+GameEntity orangeGhost(-0.2, 0.0, 1.0, 0.5, 0.0); 
 
     pellets.clear(); 
-    for (int i = 0; i < 20; i++) { 
+    for (int i = 0; i < 15; i++) { 
         float x = static_cast<float>(rand()) / static_cast<float>(RAND_MAX) * 2.0f - 1.0f;
         float y = static_cast<float>(rand()) / static_cast<float>(RAND_MAX) * 2.0f - 1.0f;
         pellets.push_back(Pellet(x, y));
@@ -106,14 +105,14 @@ void resetGameWin() {
     std::cout << "won the game. going to next level" << std::endl;
     currentLevel++;
 
-    pacman = Pacman(); 
-    redGhost = Ghost(1.0, 0.0, 0.0); 
-    greenGhost = Ghost(0.0, 1.0, 0.0); 
-    blueGhost = Ghost(0.0, 0.0, 1.0); 
-    orangeGhost = Ghost(1.0, 0.5, 0.0); 
+GameEntity pacman(0.0, 0.0, 1.0, 1.0, 0.0);
+GameEntity redGhost(-0.8, 0.0, 1.0, 0.0, 0.0); 
+GameEntity greenGhost(-0.6, 0.0, 0.0, 1.0, 0.0); 
+GameEntity blueGhost(-0.4, 0.0, 0.0, 0.0, 1.0); 
+GameEntity orangeGhost(-0.2, 0.0, 1.0, 0.5, 0.0); 
 
     pellets.clear(); 
-    for (int i = 0; i < 20; i++) { 
+    for (int i = 0; i < 15; i++) { 
         float x = static_cast<float>(rand()) / static_cast<float>(RAND_MAX) * 2.0f - 1.0f;
         float y = static_cast<float>(rand()) / static_cast<float>(RAND_MAX) * 2.0f - 1.0f;
         pellets.push_back(Pellet(x, y));
@@ -127,17 +126,18 @@ void resetGameWin() {
     glutPostRedisplay(); 
 }
 
-bool checkCollision(Pacman pacman, Ghost ghost) {
+bool checkCollision(GameEntity pacman, GameEntity ghost) {
     float threshold = 0.03; 
     return abs(pacman.getX() - ghost.getX()) <= threshold && abs(pacman.getY() - ghost.getY()) <= threshold;
 }
 
-bool checkCollisionWithPellet(Pacman pacman, Pellet pellet) {
+bool checkCollisionWithPellet(GameEntity pacman, Pellet pellet) {
     float threshold = 0.03; 
     return abs(pacman.getX() - pellet.getX()) <= threshold && abs(pacman.getY() - pellet.getY()) <= threshold;
 }
 
 void timer(int) {
+    
     for (Pellet &pellet : pellets) {
     if (checkCollisionWithPellet(pacman, pellet)) {
         pellet.eat();
@@ -145,21 +145,20 @@ void timer(int) {
         }
     }
 
-    switch (currentDirection) {
-        case 'w':
-            pacman.moveUp();
-            break;
-        case 's':
-            pacman.moveDown();
-            break;
-        case 'a':
-            pacman.moveLeft();
-            break;
-        case 'd':
-            pacman.moveRight();
-            break;
-    }
-
+switch (currentDirection) {
+    case 'w':
+        pacman.move(UP);
+        break;
+    case 's':
+        pacman.move(DOWN);
+        break;
+    case 'a':
+        pacman.move(LEFT);
+        break;
+    case 'd':
+        pacman.move(RIGHT);
+        break;
+}
     static int changeDirectionCounter = 0;
     if (changeDirectionCounter++ % 65 == 0) { 
         redGhost.changeDirection();
@@ -187,7 +186,6 @@ for (int i = 0; i < pellets.size(); i++) {
 
     if (pellets.empty()) {
         resetGameWin();
-
     }
 
     glutPostRedisplay();
@@ -200,7 +198,7 @@ void init() {
 
     srand(static_cast<unsigned>(time(0)));
 
-    for (int i = 0; i < 20; i++) {
+    for (int i = 0; i < 15; i++) {
         float x = static_cast<float>(rand()) / static_cast<float>(RAND_MAX) * 2.0f - 1.0f;
         float y = static_cast<float>(rand()) / static_cast<float>(RAND_MAX) * 2.0f - 1.0f;
 
@@ -218,6 +216,8 @@ void keyboard(unsigned char key, int x, int y) {
         currentDirection = key;
     }
 }
+
+
 
 int main(int argc, char** argv) {
     glutInit(&argc, argv);

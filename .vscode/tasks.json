@@ -7,8 +7,8 @@
       "command": "/usr/bin/clang++",
       "args": [
         "${workspaceFolder}/main.cpp",
-        "${workspaceFolder}/Pacman.cpp",
-        "${workspaceFolder}/Ghost.cpp",
+        // "${workspaceFolder}/Pacman.cpp",
+        "${workspaceFolder}/GameEntity.cpp",
         "${workspaceFolder}/Pellet.cpp",
         "-framework",
         "OpenGL",
