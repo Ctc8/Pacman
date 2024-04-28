@@ -7,16 +7,19 @@
 #include <sstream>
 #include <iostream>
 
-
+#include "Ghost.h"
+#include "Pacman.h"
 #include "Pellet.h" 
 #include "Score.h" 
 #include "GameEntity.h"
 
-GameEntity pacman(0.0, 0.0, 1.0, 1.0, 0.0);
-GameEntity redGhost(-0.8, 0.0, 1.0, 0.0, 0.0); 
-GameEntity greenGhost(-0.6, 0.0, 0.0, 1.0, 0.0); 
-GameEntity blueGhost(-0.4, 0.0, 0.0, 0.0, 1.0); 
-GameEntity orangeGhost(-0.2, 0.0, 1.0, 0.5, 0.0); 
+std::vector<GameEntity*> entities;
+GameEntity* pacman = new Pacman(0.0, 0.0, 1.0, 1.0, 0.0);
+
+GameEntity* redGhost = new Ghost(-0.8, 0.0, 1.0, 0.0, 0.0); 
+GameEntity* greenGhost = new Ghost(-0.6, 0.0, 0.0, 1.0, 0.0); 
+GameEntity* blueGhost = new Ghost(-0.4, 0.0, 0.0, 0.0, 1.0); 
+GameEntity* orangeGhost = new Ghost(-0.2, 0.0, 1.0, 0.5, 0.0); 
 
 std::vector<Pellet> pellets; 
 Score score; 
@@ -43,11 +46,11 @@ void display() {
         
     } 
     else {
-        pacman.draw();
-        redGhost.draw();
-        greenGhost.draw();
-        blueGhost.draw();
-        orangeGhost.draw();
+        pacman->draw();
+        redGhost->draw();
+        greenGhost->draw();
+        blueGhost->draw();
+        orangeGhost->draw();
 
         for (const Pellet &pellet : pellets) {
             pellet.draw();
@@ -79,11 +82,12 @@ void resetGameLose() {
     std::cout << "lost the game. Resetting game..." << std::endl;
     currentLevel = 1;
 
-GameEntity pacman(0.0, 0.0, 1.0, 1.0, 0.0);
-GameEntity redGhost(-0.8, 0.0, 1.0, 0.0, 0.0); 
-GameEntity greenGhost(-0.6, 0.0, 0.0, 1.0, 0.0); 
-GameEntity blueGhost(-0.4, 0.0, 0.0, 0.0, 1.0); 
-GameEntity orangeGhost(-0.2, 0.0, 1.0, 0.5, 0.0); 
+
+    GameEntity pacman(0.0, 0.0, 1.0, 1.0, 0.0);
+    GameEntity redGhost(-0.8, 0.0, 1.0, 0.0, 0.0); 
+    GameEntity greenGhost(-0.6, 0.0, 0.0, 1.0, 0.0); 
+    GameEntity blueGhost(-0.4, 0.0, 0.0, 0.0, 1.0); 
+    GameEntity orangeGhost(-0.2, 0.0, 1.0, 0.5, 0.0); 
 
     pellets.clear(); 
     for (int i = 0; i < 15; i++) { 
@@ -126,63 +130,70 @@ GameEntity orangeGhost(-0.2, 0.0, 1.0, 0.5, 0.0);
     glutPostRedisplay(); 
 }
 
-bool checkCollision(GameEntity pacman, GameEntity ghost) {
+bool checkCollisionWithGhost(GameEntity* pacman, GameEntity* ghost) {
     float threshold = 0.03; 
-    return abs(pacman.getX() - ghost.getX()) <= threshold && abs(pacman.getY() - ghost.getY()) <= threshold;
+    bool collision = abs(pacman->getX() - ghost->getX()) <= threshold && abs(pacman->getY() - ghost->getY()) <= threshold;
+    if (collision) {
+        resetGameLose();
+    }
+    return collision;
 }
 
-bool checkCollisionWithPellet(GameEntity pacman, Pellet pellet) {
+bool checkCollisionWithPellet(GameEntity* pacman, Pellet* pellet) {
     float threshold = 0.03; 
-    return abs(pacman.getX() - pellet.getX()) <= threshold && abs(pacman.getY() - pellet.getY()) <= threshold;
+    bool collision = abs(pacman->getX() - pellet->getX()) <= threshold && abs(pacman->getY() - pellet->getY()) <= threshold;
+    
+    if (collision) {
+        pellet->eat(); // The pellet is eaten when a collision occurs
+        score.increase(1); // Increase the score by 1
+    }
+
+    return collision;
 }
 
 void timer(int) {
-    
-    for (Pellet &pellet : pellets) {
-    if (checkCollisionWithPellet(pacman, pellet)) {
-        pellet.eat();
-        score.increase(1);
+
+    if (checkCollisionWithGhost(pacman, redGhost) ||
+        checkCollisionWithGhost(pacman, greenGhost) ||
+        checkCollisionWithGhost(pacman, blueGhost) ||
+        checkCollisionWithGhost(pacman, orangeGhost)) {
+            gameOver = true;
+        }
+
+    for (auto it = pellets.begin(); it != pellets.end(); ) {
+        if (checkCollisionWithPellet(pacman, &(*it))) {
+            it = pellets.erase(it); // Remove the eaten pellet from the game
+        } else {
+            ++it;
         }
     }
 
+
 switch (currentDirection) {
     case 'w':
-        pacman.move(UP);
+        pacman->move(UP);
         break;
     case 's':
-        pacman.move(DOWN);
+        pacman->move(DOWN);
         break;
     case 'a':
-        pacman.move(LEFT);
+        pacman->move(LEFT);
         break;
     case 'd':
-        pacman.move(RIGHT);
+        pacman->move(RIGHT);
         break;
 }
     static int changeDirectionCounter = 0;
     if (changeDirectionCounter++ % 65 == 0) { 
-        redGhost.changeDirection();
-        greenGhost.changeDirection();
-        blueGhost.changeDirection();
-        orangeGhost.changeDirection();
+        redGhost->changeDirection();
+        greenGhost->changeDirection();
+        blueGhost->changeDirection();
+        orangeGhost->changeDirection();
     }
-    redGhost.move();
-    greenGhost.move();
-    blueGhost.move();
-    orangeGhost.move();
-
-    if (checkCollision(pacman, redGhost) || checkCollision(pacman, greenGhost) || checkCollision(pacman, orangeGhost) || checkCollision(pacman, blueGhost)) {
-        gameOver = true;
-    }
-
-for (int i = 0; i < pellets.size(); i++) {
-    if (checkCollisionWithPellet(pacman, pellets[i])) {
-        pellets[i].eat();
-        score.increase(1);
-        pellets.erase(pellets.begin() + i);
-        break;
-    }
-}
+    redGhost->move();
+    greenGhost->move();
+    blueGhost->move();
+    orangeGhost->move();
 
     if (pellets.empty()) {
         resetGameWin();
@@ -220,6 +231,13 @@ void keyboard(unsigned char key, int x, int y) {
 
 
 int main(int argc, char** argv) {
+
+    entities.push_back(pacman);
+    entities.push_back(redGhost);
+    entities.push_back(greenGhost);
+    entities.push_back(blueGhost);
+    entities.push_back(orangeGhost);
+
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
 
@@ -234,7 +252,8 @@ int main(int argc, char** argv) {
     glutTimerFunc(0, timer, 0);
 
     glutMainLoop();
-}
 
+
+}
 
 
